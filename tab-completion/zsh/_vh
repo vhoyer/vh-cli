@@ -1,0 +1,76 @@
+#compdef vh
+
+function _vh() {
+  local line
+  local args=(
+    "1: :($(vh -h | grep '^-' | sed -e 's/^- //' -e 's/\s.*$//' | xargs))"
+    "*::arg:->args"
+  )
+
+  _arguments -C $args
+
+  case $line[1] in
+    boot) _hello_boot ;;
+    tools) _hello_tools ;;
+  esac
+}
+
+function _hello_boot {
+  local line
+  local args=(
+    "1: :($(vh boot -h | grep '^-' | sed -e 's/^- //' -e 's/\s.*$//' | xargs))"
+    "*::arg:->args"
+  )
+
+  _arguments -C $args
+
+  case $line[1] in
+    start) _hello_boot_start ;;
+  esac
+}
+
+function _hello_boot_start {
+  CONFIG_PATH=$HOME/.vhconfig
+  [ -f "$CONFIG_PATH" ] && source $CONFIG_PATH
+
+  local services="$(<$VH_BOOT_PATH/docker-compose.yml \
+    | sed -ne '/^\(    \|$\|\s*#\)/d' -e '/^volumes:$/,$d' -e '0,/^services:$/d' -e 's/^  \|:.*$//gp' \
+    | tr '\n' ' ' \
+    )"
+
+  local line
+  local args=(
+    "*: :($services)"
+  )
+
+  _arguments $args
+}
+
+function _hello_boot_run {
+  CONFIG_PATH=$HOME/.vhconfig
+  [ -f "$CONFIG_PATH" ] && source $CONFIG_PATH
+
+  local services="$(<$VH_BOOT_PATH/docker-compose.yml \
+    | sed -ne '/^\(    \|$\|\s*#\)/d' -e '/^volumes:$/,$d' -e '0,/^services:$/d' -e 's/^  \|:.*$//gp' \
+    | tr '\n' ' ' \
+    )"
+
+  local line
+  local args=(
+    "*: :($services)"
+  )
+
+  _arguments $args
+}
+
+function _hello_tools() {
+  local args=(
+    "--login[log in before trying to create pod]"
+    "--assume-role[configure your profile to assume the necessary ARNs]"
+    "--help[display help message]"
+  )
+
+  _arguments $args
+}
+
+_vh "$@"

@@ -1,0 +1,20 @@
+#!/bin/sh
+
+DEFAULT_BRANCH="main"
+DEFAULT_BRANCH_UPSTREAM="$(git for-each-ref --format='%(upstream:short)' "refs/heads/$DEFAULT_BRANCH")"
+LOG_FILE="/tmp/vh-self-update.log"
+UPDATE_NEEDED_FILE="${1:-/tmp/vh-needs-update}"
+
+rm -rf "$UPDATE_NEEDED_FILE" # clean old update info
+rm -rf "$LOG_FILE" # clean old update info
+echo '=== self update check routine:' 1>$LOG_FILE
+
+UPDATE_INFO="$(git remote -v update 2>&1 | grep "$DEFAULT_BRANCH_UPSTREAM")"
+echo "$UPDATE_INFO" 1>>$LOG_FILE
+
+if (echo "$UPDATE_INFO" | grep -q '^ +'); then
+  echo '=== there is an update' 1>>$LOG_FILE
+  echo "$UPDATE_INFO" 1>"$UPDATE_NEEDED_FILE"
+else
+  echo '=== already up to date' 1>>$LOG_FILE
+fi
