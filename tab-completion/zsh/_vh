@@ -3,9 +3,17 @@
 function _vh() {
   local line
   local args=(
-    "1: :($(vh -h | grep '^-' | sed -e 's/^- //' -e 's/\s.*$//' | xargs))"
+    "1: :(($(vh -h | grep '^-' | sed -e 's/^- //' -e 's/\s\+/\:"/' -e 's/$/"/')))"
     "*::arg:->args"
   )
+  # example of string this above produces:
+  # 1: :((zilla:"description ex1" local-template:"description ex2" new-system:"description ex3"))
+  #
+  # this produces a completion helper as follows:
+  # $ q init <tab>
+  # local-template  -- description ex2
+  # new-system      -- description ex3
+  # zilla           -- description ex1
 
   _arguments -C $args
 
