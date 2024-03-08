@@ -16,8 +16,7 @@ services:
     working_dir: /app
     user: node
     command: sh ./docker-compose-startup.sh
-    ports:
-      - $PORT:$PORT
+    network_mode: host
     volumes:
       - root-home:/root
       - user-home:/home/node
