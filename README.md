@@ -17,6 +17,8 @@ make install
 
 - git
 - node
+- fzf
+- jq
 
 ## Contributing
 
